@@ -61,16 +61,6 @@ class BasedeDatos:
         else:
             print("No existe la base de datos")
 
-    # def mostrar_bd(self) -> None:
-    #     self.conectar_servidor()
-    #     self.cursor.execute("SHOW DATABASES;")
-    #     for mostrar in self.cursor:
-    #         print(mostrar[0])
-    1
-    def generarContraseña(self) -> None:
-        letras = string.ascii_letters
-        numeros = string.digits
-
 bd = BasedeDatos()
 bd.conectarServidor()
 bd.verificarBD("erik")
