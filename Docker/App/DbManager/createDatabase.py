@@ -3,7 +3,7 @@ from mysql.connector import Error
 
 class BasedeDatos:
     def __init__(self) -> None:
-        self.host = "localhost"
+        self.host = "mariadb-container"
         self.user = "root"
         self.password = "root"
         self.db = None
@@ -82,8 +82,3 @@ class BasedeDatos:
             print("La base de datos se borró correctamente")
         else:
             print("No existe la base de datos")
-
-
-bd = BasedeDatos()
-bd.conectarServidor()
-bd.crearRecursos("Erik", "1234")

@@ -1,0 +1,6 @@
+/myenv
+/Docker/App/DbManager/migrations
+/Docker/App/DbManager/__pycache__
+/Docker/App/DbManager/__init__py
+/Docker/App/App__pycache__
+*.pyc
