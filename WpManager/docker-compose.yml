@@ -1,0 +1,54 @@
+services:
+  db-app:
+    image: mariadb:10.5.5
+    container_name: db-app
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test_password
+      MYSQL_DATABASE: WpManager
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    volumes:
+      - ./MariaDB:/var/lib/mysql
+  
+  web:
+    build: .
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - ./App:/App
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  celery:
+    build: .
+    user: django-user
+    command: ["celery", "-A", "App", "worker", "--loglevel=info"]
+    volumes:
+      - ./App:/App
+    depends_on:
+      - redis
+
+  celerybeat:
+    build: .
+    user: django-user
+    command: ["celery", "-A", "App", "beat", "--loglevel=info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
+    volumes:
+      - ./App:/App
+    depends_on:
+      - redis
+
+networks:
+  default:
+    external: true
+    name: webproxy

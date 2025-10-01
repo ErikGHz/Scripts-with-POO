@@ -1,6 +1,11 @@
 /myenv
-/Docker/App/DbManager/migrations
-/Docker/App/DbManager/__pycache__
-/Docker/App/DbManager/__init__py
-/Docker/App/App__pycache__
+/DbManager/App/DbManager/migrations
+/DbManager/App/DbManager/__pycache__
+/DbManager/App/DbManager/__init__py
+/DbManager/App/App/__pycache__
+/WpManager/MariaDB
+/WpManager/App/App/__pycache__
+/WpManager/App/WpManager/migrations
+/WpManager/App/WpManager/__pycache__
+/WpManager/App/WpManager/__init__py
 *.pyc
