@@ -1,9 +1,9 @@
 import mysql.connector
 from mysql.connector import Error
 
-class BasedeDatos:
+class BaseDeDatos:
     def __init__(self) -> None:
-        self.host = "mariadb-container"
+        self.host = "db-app"
         self.user = "root"
         self.password = "root"
         self.db = None
@@ -20,6 +20,7 @@ class BasedeDatos:
             if err.errno == 2003:
                 print("No se ha podido conectar a la base de datos.")
         else:
+            print("Conexion establecida a la base de datos correctamente.")
             self.cursor = self.db.cursor()
 
 
@@ -63,16 +64,19 @@ class BasedeDatos:
             self.cursor.execute(f"GRANT ALL PRIVILEGES ON {usuario}.* TO '{usuario}'@'%'")
 
 
-    def crearRecursos(self, baseDatos, contraseña) -> None:
+    def crearRecursos(self, baseDatos, contraseña) -> bool:
         try:
             if self.verificarRecursos(baseDatos):
                 self.crearBD(baseDatos)
                 self.crearUsuario(baseDatos, contraseña)
                 print("Base de datos creada correctamente.")
+                return True
             else:
                 print("No se ha creado nada.")
+                return False
         except AttributeError:
             print("No se ha inicializado una conexion")
+            return False
             
     
 
