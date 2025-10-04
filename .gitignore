@@ -6,4 +6,6 @@
 /WpManager/App/App/__pycache__
 /WpManager/App/WpManager/migrations
 /WpManager/App/WpManager/__pycache__
+/WpManager/App/WpManager/Wordpress/*
+!/WpManager/App/WpManager/Wordpress/template
 *.pyc
