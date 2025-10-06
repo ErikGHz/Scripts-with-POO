@@ -3,9 +3,9 @@
 
 
 #Ruta donde se crearan los directorios de cada wordpress
-cd ../Wordpress
+cd ../wordpress
 
-
+#Si no existe el directorio, crea uno con el nombre del wordpress
 crear_directorio(){
     nombre_directorio="$1"
     if [ -d "$nombre_directorio" ]; 
@@ -17,6 +17,7 @@ crear_directorio(){
     fi
 }
 
+#Si existe el directorio, copia los archivos necesarios para levantar un wordpress
 copiar_docker(){
     nombre_directorio="$1"
     if [ -d "$nombre_directorio" ]; 
@@ -29,18 +30,5 @@ copiar_docker(){
         echo "El directorio ${nombre_directorio} no existe"
     fi
 }
-
-# copiar_docker(){
-#     if [ -d "$ruta/$nombre_directorio" ]
-#     then
-#         cp -r $ruta/template/wordpress $ruta/$nombre_directorio
-#         cp $ruta/template/docker-compose.yaml $ruta/$nombre_directorio
-#         cp $ruta/template/.env $ruta/$nombre_directorio
-#         echo "Docker copiado correctamente"
-#     else
-        
-# fi
-# }
-
 
 "$@"

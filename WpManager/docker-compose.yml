@@ -3,6 +3,7 @@ services:
     image: mariadb:10.5.5
     container_name: db-app
     restart: unless-stopped
+    env_file: .env
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: test
@@ -14,7 +15,17 @@ services:
       - 3306:3306
     volumes:
       - ./MariaDB:/var/lib/mysql
-  
+
+  db-wp:
+    image: mariadb:10.5.5
+    container_name: db-wp
+    restart: unless-stopped
+    expose:
+      - 3306
+    env_file: .env-db-wp
+    volumes:
+      - ./App/WpManager/wordpress/MariaDB:/var/lib/mysql
+
   web:
     build: .
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
