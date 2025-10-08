@@ -1,6 +1,6 @@
 from celery import shared_task
-from .models import Usuario
 from .scripts.createDatabase import BaseDeDatos
+from .scripts.createWordpress import Wordpress
 
 @shared_task
 def my_task():
@@ -10,7 +10,12 @@ def my_task():
     return
 
 @shared_task
-def crearWordpress(titulo, contrasena) -> bool:
+def crear_base_datos(titulo, contrasena) -> None:
     nueva_bd = BaseDeDatos()
-    nueva_bd.conectarServidor()
-    nueva_bd.crearRecursos(titulo, contrasena)
+    nueva_bd.conectar_servidor()
+    nueva_bd.crear_recursos(titulo, contrasena)
+
+@shared_task
+def crear_wordpress(titulo, contrasena) -> None:
+    nuevo_wordpress = Wordpress(titulo, "", "")
+    nuevo_wordpress.crear_directorio()

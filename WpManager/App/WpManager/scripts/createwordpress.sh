@@ -22,7 +22,6 @@ copiar_docker(){
     nombre_directorio="$1"
     if [ -d "$nombre_directorio" ]; 
     then
-        cp -r ./template/wordpress "$nombre_directorio"
         cp ./template/docker-compose.yaml "$nombre_directorio"
         cp ./template/.env "$nombre_directorio"
         echo "Docker copiado correctamente"

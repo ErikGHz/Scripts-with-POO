@@ -7,8 +7,8 @@ services:
     volumes:
       - ./wordpress:/var/www/html
     expose:
-      - '80'
-
+      - 80
+      
 networks:
   default:
     external: true

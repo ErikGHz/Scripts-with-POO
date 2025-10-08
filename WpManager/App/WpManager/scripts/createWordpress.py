@@ -1,4 +1,7 @@
-import subprocess, shutil
+import subprocess, os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Wordpress:
     def __init__(self, titulo, usuario, correo):
@@ -9,12 +12,13 @@ class Wordpress:
 
     def crear_directorio(self):
         nombre_directorio = self.titulo
-        sh_comando = f"sh crearWordpress.sh crear_directorio {nombre_directorio}"
+        subprocess.run(["ls"])
+        sh_comando = f"sh {BASE_DIR}/scripts/createwordpress.sh crear_directorio {nombre_directorio}"
         subprocess.run(sh_comando, shell=True)
 
     def copiar_docker(self):
         nombre_directorio = self.titulo
-        sh_comando = f"sh crearWordpress.sh copiar_docker {nombre_directorio}"
+        sh_comando = f"sh {BASE_DIR}/scripts/createwordpress.sh copiar_docker {nombre_directorio}"
         subprocess.run(sh_comando, shell=True)
 
     def reemplazar_docker(self):
@@ -36,7 +40,7 @@ class Wordpress:
             file.write(archivo_docker)
 
     def reemplazar_dotenv(self, contrasena_bd):
-        host_bd = ""
+        host_bd = os.environ['WORDPRESS_DB_HOST']
         usuario_bd = self.titulo
         contrasena_bd = contrasena_bd
         nombre_bd = self.titulo
@@ -54,8 +58,5 @@ class Wordpress:
 
         for key, value in variables.items():
             archivo_dotenv = archivo_dotenv.replace(key, value)
-
-nuevo_wordpress = Wordpress("Medicina", "", "")
-nuevo_wordpress.crearDirectorio()
-nuevo_wordpress.copiarDocker()
-nuevo_wordpress.reemplazarDocker()
+        with open(f'../wordpress/{self.titulo}/.env', 'w') as file:
+            file.write(archivo_dotenv)

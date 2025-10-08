@@ -1,14 +1,9 @@
 services:
-  db-app:
+  app-db:
     image: mariadb:10.5.5
-    container_name: db-app
+    container_name: app-db
     restart: unless-stopped
-    env_file: .env
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: test
-      MYSQL_PASSWORD: test_password
-      MYSQL_DATABASE: WpManager
+    env_file: .env-db
     expose:
       - 3306
     ports:
@@ -16,24 +11,26 @@ services:
     volumes:
       - ./MariaDB:/var/lib/mysql
 
-  db-wp:
+  wp-db:
     image: mariadb:10.5.5
-    container_name: db-wp
+    container_name: wp-db
     restart: unless-stopped
     expose:
       - 3306
-    env_file: .env-db-wp
+    env_file: .env-wp-db
     volumes:
       - ./App/WpManager/wordpress/MariaDB:/var/lib/mysql
 
   web:
     build: .
+    env_file: .env
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - ./App:/App
     ports:
       - "8000:8000"
     depends_on:
+      - app-db
       - redis
 
   redis:
@@ -43,15 +40,18 @@ services:
 
   celery:
     build: .
+    env_file: .env-celery
     user: django-user
     command: ["celery", "-A", "App", "worker", "--loglevel=info"]
     volumes:
       - ./App:/App
     depends_on:
       - redis
+      - wp-db
 
   celerybeat:
     build: .
+    env_file: .env-celery
     user: django-user
     command: ["celery", "-A", "App", "beat", "--loglevel=info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
     volumes:

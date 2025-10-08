@@ -1,11 +1,11 @@
-import mysql.connector
+import mysql.connector, os
 from mysql.connector import Error
 
 class BaseDeDatos:
     def __init__(self) -> None:
-        self.host = "db-app"
-        self.user = "root"
-        self.password = "root"
+        self.host = os.environ['WORDPRESS_DB_HOST']
+        self.user = os.environ['WORDPRESS_DB_USER']
+        self.password = os.environ['WORDPRESS_DB_PASSWORD']
         self.db = None
         self.cursor = None
 
@@ -44,7 +44,7 @@ class BaseDeDatos:
     def verificar_recursos(self, base_datos) -> bool:
         base_datos = base_datos
         usuario = base_datos
-        if not self.verificarBD(base_datos) and not self.verificarUsuario(usuario):
+        if not self.verificar_bd(base_datos) and not self.verificar_usuario(usuario):
             return True
         else: 
             print("Ya existe una base datos o un usuario con el mismo nombre.")
@@ -69,14 +69,15 @@ class BaseDeDatos:
                 print("El usuario ya existe")
         else:
             self.cursor.execute(f"GRANT ALL PRIVILEGES ON {usuario}.* TO '{usuario}'@'%'")
+            self.cursor.execute("FLUSH PRIVILEGES")
             
-    def crear_recursos(self, baseDatos, contrasena) -> bool:
+    def crear_recursos(self, base_datos, contrasena) -> bool:
         base_datos = base_datos
         contrasena = contrasena
         try:
-            if self.verificarRecursos(base_datos):
-                self.crearBD(base_datos)
-                self.crearUsuario(base_datos, contrasena)
+            if self.verificar_recursos(base_datos):
+                self.crear_bd(base_datos)
+                self.crear_usuario(base_datos, contrasena)
                 print("Base de datos creada correctamente.")
                 return True
             else:
@@ -87,7 +88,7 @@ class BaseDeDatos:
             return False
 
     def eliminar_bd(self, base_datos) -> None:
-        if self.verificarBD(base_datos) == True:
+        if self.verificar_bd(base_datos) == True:
             self.cursor.execute(f"DROP DATABASE {base_datos};")
             print("La base de datos se borró correctamente")
         else:
