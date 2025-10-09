@@ -22,3 +22,4 @@ def crear_wordpress(titulo, contrasena) -> None:
     nuevo_wordpress.copiar_docker()
     nuevo_wordpress.reemplazar_docker()
     nuevo_wordpress.reemplazar_dotenv(contrasena)
+    nuevo_wordpress.inciar_docker()

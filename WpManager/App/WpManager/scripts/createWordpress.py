@@ -47,10 +47,15 @@ class Wordpress:
                 '$MYSQL_USER': usuario_bd,
                 '$MYSQL_PASSWORD': contrasena_bd,
                 '$MYSQL_DATABASE': nombre_bd,
-                '$VIRTUAL_HOST': host_virtual,
+                '$VIRTUAL_HOST': host_virtual.lower(),
             }
 
         for key, value in variables.items():
             archivo_dotenv = archivo_dotenv.replace(key, value)
         with open(f'{BASE_DIR}/wordpress/{self.titulo}/.env', 'w') as file:
             file.write(archivo_dotenv)
+
+    def inciar_docker(self):
+        nombre_directorio = self.titulo
+        subprocess.run(["sh",  f"{BASE_DIR}/scripts/createwordpress.sh", "iniciar_docker", BASE_DIR, nombre_directorio])
+        pass

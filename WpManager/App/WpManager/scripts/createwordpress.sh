@@ -30,4 +30,9 @@ copiar_docker(){
     fi
 }
 
+iniciar_docker(){
+    cd $BASE_DIR/wordpress/$nombre_directorio
+    docker compose up -d
+}
+
 "$@"
