@@ -47,6 +47,7 @@ services:
       - ./App:/App
     depends_on:
       - redis
+      - app-db
       - wp-db
 
   celerybeat:
@@ -58,6 +59,7 @@ services:
       - ./App:/App
     depends_on:
       - redis
+      - app-db
 
 networks:
   default:

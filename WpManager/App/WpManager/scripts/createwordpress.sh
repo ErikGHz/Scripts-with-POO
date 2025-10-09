@@ -1,13 +1,14 @@
 #!/bin/bash
-#Variable proviene de crearWordpress.py
 
+#Variable proviene de crearWordpress.py
+BASE_DIR=$2
+nombre_directorio="$3"
 
 #Ruta donde se crearan los directorios de cada wordpress
-cd ../wordpress
+cd $BASE_DIR/wordpress
 
 #Si no existe el directorio, crea uno con el nombre del wordpress
 crear_directorio(){
-    nombre_directorio="$1"
     if [ -d "$nombre_directorio" ]; 
     then
         echo "El directorio ya existe: $nombre_directorio"
@@ -19,7 +20,6 @@ crear_directorio(){
 
 #Si existe el directorio, copia los archivos necesarios para levantar un wordpress
 copiar_docker(){
-    nombre_directorio="$1"
     if [ -d "$nombre_directorio" ]; 
     then
         cp ./template/docker-compose.yaml "$nombre_directorio"
