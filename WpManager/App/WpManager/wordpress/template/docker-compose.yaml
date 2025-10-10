@@ -5,9 +5,14 @@ services:
     restart: unless-stopped
     env_file: .env
     volumes:
-      - ./wordpress:/var/www/html
+      - .App/wordpress:/var/www/html
     expose:
       - 80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://$CONTAINER_NAME"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
       
 networks:
   default:

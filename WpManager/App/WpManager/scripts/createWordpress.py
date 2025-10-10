@@ -59,3 +59,16 @@ class Wordpress:
         nombre_directorio = self.titulo
         subprocess.run(["sh",  f"{BASE_DIR}/scripts/createwordpress.sh", "iniciar_docker", BASE_DIR, nombre_directorio])
         pass
+
+    def docker_healthcheck(self) -> str:
+        nombre_directorio = self.titulo
+        command = f"docker inspect {nombre_directorio} --format '{{{{.State.Health.Status}}}}'"
+        output_command = subprocess.check_output(command, shell=True)
+        health = output_command.decode().strip()
+        if health == 'healthy':
+            print('healthy')
+        elif health == 'unhealthy':
+            print('unhealthy')
+        else:
+            print('starting')
+        return health
