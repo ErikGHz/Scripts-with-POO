@@ -3,7 +3,8 @@ FROM python:alpine
 RUN apk update \
     && apk add --virtual build-deps gcc python3-dev musl-dev \
     && apk add --no-cache mariadb-dev \
-    && apk add --no-cache mysql-client
+    && apk add --no-cache mysql-client\
+    && apk add --no-cache docker-compose
 
 WORKDIR /App
 
@@ -15,6 +16,12 @@ RUN pip install --no-cache-dir -r requirements.txt && \
         --disabled-password \
         --no-create-home \
         django-user
+
+
+#EL GUID DEL GRUPO DE DOCKER TIENE QUE SER IGUAL DEL HOST
+RUN addgroup -g 989 docker 
+
+RUN addgroup django-user docker
 
 COPY . .
 

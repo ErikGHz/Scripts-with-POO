@@ -47,10 +47,28 @@ class Wordpress:
                 '$MYSQL_USER': usuario_bd,
                 '$MYSQL_PASSWORD': contrasena_bd,
                 '$MYSQL_DATABASE': nombre_bd,
-                '$VIRTUAL_HOST': host_virtual,
+                '$VIRTUAL_HOST': host_virtual.lower(),
             }
 
         for key, value in variables.items():
             archivo_dotenv = archivo_dotenv.replace(key, value)
         with open(f'{BASE_DIR}/wordpress/{self.titulo}/.env', 'w') as file:
             file.write(archivo_dotenv)
+
+    def inciar_docker(self):
+        nombre_directorio = self.titulo
+        subprocess.run(["sh",  f"{BASE_DIR}/scripts/createwordpress.sh", "iniciar_docker", BASE_DIR, nombre_directorio])
+        pass
+
+    def docker_healthcheck(self) -> str:
+        nombre_directorio = self.titulo
+        command = f"docker inspect {nombre_directorio} --format '{{{{.State.Health.Status}}}}'"
+        output_command = subprocess.check_output(command, shell=True)
+        health = output_command.decode().strip()
+        if health == 'healthy':
+            print('healthy')
+        elif health == 'unhealthy':
+            print('unhealthy')
+        else:
+            print('starting')
+        return health
