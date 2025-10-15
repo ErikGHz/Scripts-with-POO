@@ -93,4 +93,10 @@ class BaseDeDatos:
             print("La base de datos se borró correctamente")
         else:
             print("No existe la base de datos")
-
+    
+    # def reemplazar_url(self, base_datos) -> None:
+    #     base_datos = base_datos
+    #     self.cursor.execute(f"UPDATE wp_options SET option_value = replace(option_value, 'oldurl.com', 'newurl.com') WHERE option_name = 'home' AND option_name = 'siteurl';")
+    #     UPDATE wp_posts SET guid = replace(guid, 'oldurl.com','newurl.com');
+    #     UPDATE wp_posts SET post_content = replace(post_content, 'oldurl.com', 'newurl.com'); 
+    #     UPDATE wp_postmeta SET meta_value = replace(meta_value,'oldurl.com','newurl.com');

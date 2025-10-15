@@ -13,15 +13,23 @@ class Selenium:
     def selenium_driver(self) -> None:
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
+        options.add_argument("--window-size=1920,1080")
         self.driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", options=options)
     
     def seleccionar_idioma(self) -> None:
+        title = self.driver.title
+        print(title)
+        select_element = self.driver.find_element(By.NAME, 'language')
+        select = Select(select_element)
         idioma_es_MX = self.driver.find_element(By.CSS_SELECTOR, 'option[value=es_MX]')
-        idioma_es_MX.click()
+        select.select_by_value('es_MX')
+        self.driver.save_screenshot(f'screenshot{self.titulo}.png')
+        assert idioma_es_MX.is_selected()
         boton_continuar = self.driver.find_element(By.ID, 'language-continue')
         boton_continuar.click()
         
     def llenar_formulario(self) -> None:
+        self.driver.implicitly_wait(2)
         insertar_titulo = self.driver.find_element(By.ID, 'weblog_title')
         insertar_titulo.send_keys(self.titulo)
         insertar_usuario = self.driver.find_element(By.ID, 'user_login')
@@ -42,12 +50,12 @@ class Selenium:
         self.driver.quit()
 
     def instalacion_wordpress(self) -> None:
-        self.seleccionar_idioma()
-        self.llenar_formulario()
-        self.desconectar_driver()
-
-
-    
-
-nueva_instalacion = Selenium("Medicina", "Carlos Medico", "Medicina@uaz.edu.mx")
-nueva_instalacion.instalacion_wordpress()
+        if self.driver.title == 'WordPress › Installation':
+            print('Iniciar instalacion de Wordpress')
+            self.seleccionar_idioma()
+            self.llenar_formulario()
+            self.desconectar_driver()
+        else:
+            self.driver.implicitly_wait(2)
+            print('Espera implicita')
+            self.instalacion_wordpress()
