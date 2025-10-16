@@ -21,18 +21,38 @@ services:
     volumes:
       - ./App/WpManager/wordpress/MariaDB:/var/lib/mysql
 
-  web:
+  app:
+    container_name: app
     build: .
     env_file: .env
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
-      - ./App:/App
-    ports:
-      - "8000:8000"
+      - ./App:/home/worker/App
+      - static_app:/static
+    expose:
+      - 8000
     depends_on:
-      - selenium
       - app-db
-      - redis
+    links:
+      - app-db
+
+  app-nginx:
+    image: nginx:1.15.12-alpine
+    container_name: app-nginx
+    restart: unless-stopped
+    environment:
+      - VIRTUAL_HOST=${APP_NAME}
+      # - LETSENCRYPT_HOST=${APP_NAME}
+      # - LETSENCRYPT_EMAIL=37184804@uaz.edu.mx
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static_app:/static
+    depends_on:
+      - app
+    links:
+      - app
+    expose:
+      - 80
 
   redis:
     image: redis:alpine
@@ -42,23 +62,24 @@ services:
   celery:
     build: .
     env_file: .env-celery
-    user: django-user
+    user: worker
     command: ["celery", "-A", "App", "worker", "--loglevel=info"]
     volumes:
-      - ./App:/App
+      - ./App:/home/worker/App
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - redis
       - app-db
       - wp-db
+      - selenium
 
   celerybeat:
     build: .
     env_file: .env-celery
-    user: django-user
+    user: worker
     command: ["celery", "-A", "App", "beat", "--loglevel=info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
     volumes:
-      - ./App:/App
+      - ./App:/home/worker/App
     depends_on:
       - redis
       - app-db
@@ -77,3 +98,6 @@ networks:
   default:
     external: true
     name: webproxy
+
+volumes:
+  static_app:
