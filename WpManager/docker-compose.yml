@@ -1,38 +1,64 @@
 services:
   app-db:
-    image: mariadb:10.5.5
     container_name: app-db
-    restart: unless-stopped
-    env_file: .env-db
+    image: mariadb:10.5.5
+    env_file: 
+      - .env-db
     expose:
-      - 3306
+      - "3306"
     ports:
       - 3306:3306
     volumes:
       - ./MariaDB:/var/lib/mysql
+    restart: unless-stopped
 
   wp-db:
-    image: mariadb:10.5.5
     container_name: wp-db
-    restart: unless-stopped
+    image: mariadb:10.5.5
+    env_file: 
+      - .env-wp-db
     expose:
-      - 3306
-    env_file: .env-wp-db
+      - "3306"
     volumes:
       - ./App/WpManager/wordpress/MariaDB:/var/lib/mysql
-
-  web:
-    build: .
-    env_file: .env
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    restart: unless-stopped
+    
+  app:
+    container_name: app
+    build: 
+      context: .
+    env_file: 
+      - .env
+    expose:
+      - 8000
     volumes:
-      - ./App:/App
-    ports:
-      - "8000:8000"
+      - ./App:/home/worker/App
+      - static_app1:/static
     depends_on:
+      - celery
       - selenium
       - app-db
-      - redis
+    links:
+      - app-db
+    restart: unless-stopped
+
+  nginx-app:
+    container_name: nginx-app
+    image: nginx:1.15.12-alpine
+    environment:
+      - VIRTUAL_HOST=${APP_NAME}
+      # - LETSENCRYPT_HOST=${APP_NAME}
+      # - LETSENCRYPT_EMAIL=luiscampos@uaz.edu.mx
+    expose:
+      - 80
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static_app1:/static
+    depends_on:
+      - app
+    links:
+      - app
+    restart: unless-stopped
 
   redis:
     image: redis:alpine
@@ -41,11 +67,12 @@ services:
 
   celery:
     build: .
-    env_file: .env-celery
-    user: django-user
+    env_file: 
+      - .env-celery
+    user: worker
     command: ["celery", "-A", "App", "worker", "--loglevel=info"]
     volumes:
-      - ./App:/App
+      - ./App:/home/worker/App
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - redis
@@ -54,11 +81,12 @@ services:
 
   celerybeat:
     build: .
-    env_file: .env-celery
-    user: django-user
+    env_file: 
+      - .env-celery
+    user: worker
     command: ["celery", "-A", "App", "beat", "--loglevel=info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
     volumes:
-      - ./App:/App
+      - ./App:/home/worker/App
     depends_on:
       - redis
       - app-db
@@ -68,6 +96,9 @@ services:
     container_name: selenium
     ports:
       - "4444:4444"
+
+volumes:
+  static_app1:
 
 networks:
   default:

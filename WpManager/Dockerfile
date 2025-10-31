@@ -6,25 +6,30 @@ RUN apk update \
     && apk add --no-cache mysql-client\
     && apk add --no-cache docker-compose
 
-WORKDIR /App
+RUN mkdir /static
+RUN chmod 775 /static
 
-COPY requirements.txt .
-
-
-RUN pip install --no-cache-dir -r requirements.txt && \ 
-    adduser \                                           
-        --disabled-password \
-        --no-create-home \
-        django-user
-
+RUN adduser -D worker
+RUN chown -R worker:worker /static
 
 #EL GUID DEL GRUPO DE DOCKER TIENE QUE SER IGUAL DEL HOST
 RUN addgroup -g 989 docker 
+RUN addgroup worker docker
 
-RUN addgroup django-user docker
+WORKDIR /home/worker
+RUN mkdir App
+WORKDIR /home/worker/App
 
-COPY . .
+COPY --chown=worker:worker ./requirements.txt .
+
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+    
+COPY ./App .
+
+EXPOSE 8000
+STOPSIGNAL SIGTERM
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
-USER django-user
+USER worker
