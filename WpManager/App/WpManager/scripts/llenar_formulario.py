@@ -45,9 +45,3 @@ class Selenium:
         self.seleccionar_idioma()
         self.llenar_formulario()
         self.desconectar_driver()
-
-
-    
-
-nueva_instalacion = Selenium("Medicina", "Carlos Medico", "Medicina@uaz.edu.mx")
-nueva_instalacion.instalacion_wordpress()
