@@ -1,0 +1,20 @@
+services:
+  $SERVICE_NAME:
+    image: wordpress:latest
+    container_name: $CONTAINER_NAME
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - .App/wordpress:/var/www/html
+    expose:
+      - 80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://$CONTAINER_NAME"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      
+networks:
+  default:
+    external: true
+    name: webproxy
