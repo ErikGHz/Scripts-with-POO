@@ -2,7 +2,7 @@ import time
 from celery import shared_task
 from .scripts.createDatabase import BaseDeDatos
 from .scripts.createWordpress import Wordpress
-from .scripts.seleniumScript import rellenar_formulario
+from .scripts.llenar_formulario import Selenium
 
 @shared_task
 def my_task():
@@ -34,9 +34,10 @@ def formulario_wordpress(titulo, usuario, correo) -> None:
     wordpress = Wordpress(titulo)
     while True:
         if wordpress.docker_healthcheck() == 'healthy':
-                print("WordPress listo!")
-                rellenar_formulario(titulo, usuario, correo)
+                print("WordPress listo")
+                rellenar_formulario = Selenium(titulo, usuario, correo)
+                rellenar_formulario.instalacion_wordpress()
                 break
         elif time.time() - start_time > timeout:
             print('Wordpress aun no esta listo')
-        time.sleep(1)  
+        time.sleep(1)
